@@ -27,7 +27,7 @@ CORS(
     app,
     resources={r"/*": {"origins": [
         "http://localhost:5173",
-        "https://smart-task-manager-ebon.vercel.app"
+        "https://smart-task-manager-kappa-topaz.vercel.app"
     ]}},
     supports_credentials=True,
     allow_headers=["Content-Type", "Authorization"],
