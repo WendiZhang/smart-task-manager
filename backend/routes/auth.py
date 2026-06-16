@@ -11,7 +11,12 @@ auth_routes = Blueprint("auth", __name__)
 def register():
     data = request.json or {}
 
-    username = data.get("username").strip().lower()
+    username = data.get("username")
+
+    if not username:
+        return jsonify({"error": "Missing username"}), 400
+
+    username = username.strip().lower()
     password = data.get("password")
 
     if not username or not password:
@@ -51,6 +56,10 @@ def login():
     data = request.json or {}
 
     username = data.get("username")
+    if not username:
+        return jsonify({"error": "Missing username"}), 400
+
+    username = username.strip().lower()
     password = data.get("password")
 
     if not username or not password:

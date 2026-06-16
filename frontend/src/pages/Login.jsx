@@ -33,6 +33,12 @@ export default function Login() {
         }),
       });
 
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Server error:", text);
+        throw new Error("Login failed");
+      }
+
       const data = await res.json();
 
       if (res.ok) {
