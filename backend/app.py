@@ -14,10 +14,11 @@ from routes.auth import auth_routes
 app = Flask(__name__)
 CORS(
     app,
-    origins=[
+    resources={r"/*": {"origins": [
         "http://localhost:5173",
         "https://smart-task-manager-ebon.vercel.app"
-    ]
+    ]}},
+    supports_credentials=True
 )
 jwt = JWTManager(app)
 
