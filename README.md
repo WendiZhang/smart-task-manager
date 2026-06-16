@@ -55,15 +55,3 @@ npm install
 
 npm run dev
 ```
-
-## Screenshots
-
-Coming soon.
-
-## Future Improvements
-
-- Task due dates
-- Task categories
-- Progress tracking
-- Persistent drag-and-drop ordering
-- Deployment with Vercel and Render
