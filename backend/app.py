@@ -12,10 +12,19 @@ from routes.ai import ai_routes
 from routes.auth import auth_routes
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173"])
+CORS(
+    app,
+    origins=[
+        "http://localhost:5173",
+        "https://smart-task-manager-ebon.vercel.app"
+    ]
+)
 jwt = JWTManager(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tasks.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+    "DATABASE_URL",
+    "sqlite:///tasks.db"
+)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 
