@@ -16,6 +16,7 @@ class Task(db.Model):
         db.Date,
         nullable=True
     )
+    position = db.Column(db.Integer, default=0, nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
 
 class Subtask(db.Model):

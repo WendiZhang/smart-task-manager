@@ -6,6 +6,8 @@ load_dotenv()
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from datetime import timedelta
+from sqlalchemy import inspect, text
 from models import db
 from routes.tasks import task_routes
 from routes.ai import ai_routes
@@ -19,6 +21,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=7)
 
 db.init_app(app)
 jwt = JWTManager(app)
@@ -51,6 +54,18 @@ def after_request(response):
 
 with app.app_context():
     db.create_all()
+
+    task_columns = {
+        column["name"] for column in inspect(db.engine).get_columns("task")
+    }
+    if "position" not in task_columns:
+        db.session.execute(
+            text(
+                "ALTER TABLE task "
+                "ADD COLUMN position INTEGER NOT NULL DEFAULT 0"
+            )
+        )
+        db.session.commit()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))

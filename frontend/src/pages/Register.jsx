@@ -9,6 +9,7 @@ export default function Register() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPasswords, setShowPasswords] = useState(false);
 
   const navigate = useNavigate();
 
@@ -42,7 +43,7 @@ export default function Register() {
         }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
         setError(data.error || "Registration failed");
@@ -64,8 +65,8 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-100 to-gray-200">
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-100 via-emerald-50 to-teal-100 p-4">
+      <div className="bg-white/95 p-6 sm:p-8 rounded-3xl border border-white shadow-xl w-full max-w-md">
 
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
           Create Account
@@ -75,40 +76,74 @@ export default function Register() {
           Register a new account
         </p>
 
-        <form onSubmit={handleRegister} className="space-y-4">
+        <form onSubmit={handleRegister} className="space-y-5">
 
+          <div>
+            <label htmlFor="register-username" className="mb-1.5 block text-sm font-medium text-gray-700">
+              Username
+            </label>
           <input
+            id="register-username"
             type="text"
             value={username}
             placeholder="Username"
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+            autoComplete="username"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
+          </div>
 
-          <input
-            type="password"
-            value={password}
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
+          <div>
+            <label htmlFor="register-password" className="mb-1.5 block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                id="register-password"
+                type={showPasswords ? "text" : "password"}
+                value={password}
+                placeholder="Password"
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 pr-16 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPasswords((visible) => !visible)}
+                className="absolute inset-y-0 right-0 px-4 text-sm font-medium text-gray-500 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500"
+                aria-label={showPasswords ? "Hide passwords" : "Show passwords"}
+              >
+                {showPasswords ? "Hide" : "Show"}
+              </button>
+            </div>
+            <p className="mt-1.5 text-xs text-gray-500">
+              Use at least 6 characters with a letter and a number.
+            </p>
+          </div>
 
-          <input
-            type="password"
-            value={confirmPassword}
-            placeholder="Confirm Password"
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
+          <div>
+            <label htmlFor="confirm-password" className="mb-1.5 block text-sm font-medium text-gray-700">
+              Confirm password
+            </label>
+            <input
+              id="confirm-password"
+              type={showPasswords ? "text" : "password"}
+              value={confirmPassword}
+              placeholder="Confirm Password"
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+          </div>
 
           {error && (
-            <div className="text-red-500 text-sm">
+            <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-red-700 text-sm">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="text-green-600 text-sm">
+            <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-700 text-sm">
               {success}
             </div>
           )}
@@ -116,7 +151,7 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition font-semibold disabled:bg-green-400 disabled:cursor-not-allowed"
+            className="w-full bg-emerald-600 text-white py-3 rounded-xl hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 transition font-semibold disabled:bg-emerald-400 disabled:cursor-not-allowed"
           >
             {loading ? "Creating Account..." : "Register"}
           </button>
@@ -130,8 +165,9 @@ export default function Register() {
         </div>
 
         <button
+          type="button"
           onClick={() => navigate("/login")}
-          className="w-full border border-gray-300 py-2 rounded-lg hover:bg-gray-100 transition text-gray-700"
+          className="w-full border border-gray-300 py-3 rounded-xl hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 transition text-gray-700 font-medium"
         >
           Already have an account? Login
         </button>

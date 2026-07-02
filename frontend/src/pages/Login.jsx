@@ -6,6 +6,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -33,24 +34,16 @@ export default function Login() {
         }),
       });
 
+      const data = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        const text = await res.text();
-        console.error("Server error:", text);
-        throw new Error("Login failed");
-      }
-
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem("token", data.token);
-
-        // Optional: store username
-        localStorage.setItem("username", username);
-
-        navigate("/");
-      } else {
         setError(data.error || "Login failed");
+        return;
       }
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("username", username.trim().toLowerCase());
+      navigate("/");
     } catch (err) {
       console.error(err);
       setError("Unable to connect to server");
@@ -60,8 +53,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-100 to-gray-200">
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100 p-4">
+      <div className="bg-white/95 p-6 sm:p-8 rounded-3xl border border-white shadow-xl w-full max-w-md">
 
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
           Welcome Back
@@ -71,26 +64,50 @@ export default function Login() {
           Sign in to your account
         </p>
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-5">
 
+          <div>
+            <label htmlFor="login-username" className="mb-1.5 block text-sm font-medium text-gray-700">
+              Username
+            </label>
           <input
+            id="login-username"
             type="text"
             value={username}
             placeholder="Username"
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="username"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          </div>
 
-          <input
-            type="password"
-            value={password}
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <div>
+            <label htmlFor="login-password" className="mb-1.5 block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                id="login-password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                placeholder="Password"
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 pr-16 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((visible) => !visible)}
+                className="absolute inset-y-0 right-0 px-4 text-sm font-medium text-gray-500 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+          </div>
 
           {error && (
-            <div className="text-red-500 text-sm">
+            <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-red-700 text-sm">
               {error}
             </div>
           )}
@@ -98,7 +115,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-semibold disabled:bg-blue-400 disabled:cursor-not-allowed"
+            className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition font-semibold disabled:bg-blue-400 disabled:cursor-not-allowed"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -112,8 +129,9 @@ export default function Login() {
         </div>
 
         <button
+          type="button"
           onClick={() => navigate("/register")}
-          className="w-full border border-gray-300 py-2 rounded-lg hover:bg-gray-100 transition text-gray-700"
+          className="w-full border border-gray-300 py-3 rounded-xl hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition text-gray-700 font-medium"
         >
           Create an Account
         </button>

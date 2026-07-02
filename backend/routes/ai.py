@@ -1,23 +1,35 @@
 from flask import Blueprint, request, jsonify
 import os
 from openai import OpenAI
-from models import db, Subtask
+from models import db, Task, Subtask
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 ai_routes = Blueprint("ai", __name__)
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 @ai_routes.route("/breakdown", methods=["POST"])
+@jwt_required()
 def breakdown_task():
 
     try:
 
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         task = data.get("task")
         task_id = data.get("task_id")
 
         if not task or not task_id:
             return jsonify({"error": "Missing task"}), 400
+
+        user_id = int(get_jwt_identity())
+
+        task_record = Task.query.filter_by(
+            id=task_id,
+            user_id=user_id
+        ).first()
+
+        if not task_record:
+            return jsonify({"error": "Task not found"}), 404
 
         response = client.chat.completions.create(
             model="gpt-4o-mini",
