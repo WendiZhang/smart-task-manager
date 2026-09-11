@@ -1,4 +1,4 @@
-#!/Users/wzhang/Desktop/work/smart-task-manager/backend/venv/bin/python3
+#!/Users/wzhang/Desktop/work/smart-task-manager/backend/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

@@ -12,10 +12,6 @@ class Task(db.Model):
         default=False,
         nullable=False
     )
-    due_date = db.Column(
-        db.Date,
-        nullable=True
-    )
     position = db.Column(db.Integer, default=0, nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
 

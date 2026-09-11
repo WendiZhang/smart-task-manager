@@ -42,7 +42,6 @@ export default function Login() {
       }
 
       localStorage.setItem("token", data.token);
-      localStorage.setItem("username", username.trim().toLowerCase());
       navigate("/");
     } catch (err) {
       console.error(err);

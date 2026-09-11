@@ -24,7 +24,7 @@ app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=7)
 
 db.init_app(app)
-jwt = JWTManager(app)
+JWTManager(app)
 
 CORS(
     app,
@@ -37,20 +37,13 @@ CORS(
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 )
 
-# Register routes
 app.register_blueprint(task_routes, url_prefix="/tasks")
-
 app.register_blueprint(ai_routes, url_prefix="/ai")
-
 app.register_blueprint(auth_routes, url_prefix="/auth")
 
 @app.route("/")
 def home():
     return "working"
-
-@app.after_request
-def after_request(response):
-    return response
 
 with app.app_context():
     db.create_all()

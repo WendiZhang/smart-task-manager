@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 from models import db, Task, Subtask
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from datetime import datetime
 from sqlalchemy import func
 
 task_routes = Blueprint("tasks", __name__)
@@ -24,7 +23,6 @@ def get_tasks():
                 "id": t.id,
                 "title": t.title,
                 "completed": t.completed,
-                "position": t.position,
                 "subtasks": [
                     {
                         "id": s.id,
@@ -38,7 +36,7 @@ def get_tasks():
         ])
 
     except Exception as e:
-        print("GET TASK ERROR:", e)  # 👈 THIS IS KEY
+        print("GET TASK ERROR:", e)
         return jsonify({"error": "Server error"}), 500
 
 @task_routes.route("/", methods=["POST"])
@@ -53,14 +51,6 @@ def add_task():
         return jsonify({"error": "Title is required"}), 400
 
     try:
-        due_date = None
-
-        if data.get("due_date"):
-            due_date = datetime.strptime(
-                data["due_date"],
-                "%Y-%m-%d"
-            ).date()
-
         last_position = (
             db.session.query(func.max(Task.position))
             .filter(Task.user_id == user_id)
@@ -70,7 +60,6 @@ def add_task():
         new_task = Task(
             title=title,
             user_id=user_id,
-            due_date=due_date,
             position=(last_position if last_position is not None else -1) + 1
         )
 
@@ -127,7 +116,7 @@ def update_task(id):
     if not title:
         return jsonify({"error": "Title is required"}), 400
 
-    task.title = data["title"]
+    task.title = title
     db.session.commit()
 
     return jsonify({"msg": "Updated"})

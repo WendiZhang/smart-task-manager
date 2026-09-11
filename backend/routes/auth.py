@@ -6,17 +6,10 @@ from flask_jwt_extended import create_access_token
 
 auth_routes = Blueprint("auth", __name__)
 
-# REGISTER
 @auth_routes.route("/register", methods=["POST"])
 def register():
     data = request.json or {}
-
-    username = data.get("username")
-
-    if not username:
-        return jsonify({"error": "Missing username"}), 400
-
-    username = username.strip().lower()
+    username = (data.get("username") or "").strip().lower()
     password = data.get("password")
 
     if not username or not password:
@@ -50,22 +43,16 @@ def register():
         return jsonify({"error": str(e)}), 500
 
 
-# LOGIN
 @auth_routes.route("/login", methods=["POST"])
 def login():
     data = request.json or {}
-
-    username = data.get("username")
-    if not username:
-        return jsonify({"error": "Missing username"}), 400
-
-    username = username.strip().lower()
+    username = (data.get("username") or "").strip().lower()
     password = data.get("password")
 
     if not username or not password:
         return jsonify({"error": "Missing fields"}), 400
 
-    user = User.query.filter_by(username=username.strip().lower()).first()
+    user = User.query.filter_by(username=username).first()
 
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -75,7 +62,4 @@ def login():
     
     token = create_access_token(identity=str(user.id))
 
-    return jsonify({
-        "token": token,
-        "user_id": user.id
-    }), 200
+    return jsonify({"token": token}), 200
