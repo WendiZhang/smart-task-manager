@@ -2,12 +2,6 @@
 
 An AI-powered task management application built with React and Flask.
 
-## Live Demo
-
-Frontend Demo: https://smart-task-manager-33r8.onrender.com
-
-Backend API: https://ai-product-studio-qn6v.onrender.com
-
 ## Screenshots
 
 ### Dashboard
